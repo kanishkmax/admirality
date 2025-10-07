@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms. Admiralty - Join the Waitlist</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Applying custom fonts */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom color palette inspired by ms.admiralty */
+        .bg-navy { background-color: #0A192F; } /* A deep, dark navy blue */
+        .text-gold { color: #D4AF37; } /* A rich, classic gold */
+        .border-gold { border-color: #D4AF37; }
+        .bg-gold { background-color: #D4AF37; }
+        .hover\:bg-gold-dark:hover { background-color: #c49d26; }
+        .focus\:ring-gold:focus {
+            --tw-ring-color: #D4AF37;
+        }
+        /* Floating animation for decorative images */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        /* Ensure decorative images are circular and fit well */
+        .decorative-image {
+            object-fit: cover;
+            object-position: center;
+        }
+    </style>
+</head>
+<body class="bg-navy text-white min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+
+    <!-- Decorative floating images -->
+    <img src="WhatsApp Image 2025-10-07 at 15.04.35.jpeg" alt="Cartoon portrait of a woman" class="decorative-image absolute top-10 left-5 sm:top-20 sm:left-10 w-24 h-24 md:w-36 md:h-36 rounded-full border-2 border-gold/50 opacity-20 animate-float -z-1">
+    <img src="images (2).jpeg" alt="Cartoon of a couple" class="decorative-image absolute bottom-8 right-5 sm:bottom-16 sm:right-12 w-20 h-20 md:w-28 md:h-28 rounded-full border-2 border-gold/50 opacity-20 animate-float -z-1" style="animation-delay: 1.5s;">
+    <img src="WhatsApp Image 2025-10-07 at 15.05.08.jpeg" alt="Cartoon of a couple hugging" class="decorative-image hidden md:block absolute top-1/3 right-10 sm:top-1/2 sm:-translate-y-1/2 sm:right-20 w-16 h-16 md:w-24 md:h-24 rounded-full border-2 border-gold/50 opacity-20 animate-float -z-1" style="animation-delay: 3s;">
+
+    <!-- Main container with a subtle border for an elegant touch -->
+    <div class="w-full max-w-2xl mx-auto text-center bg-navy/80 backdrop-blur-sm p-8 md:p-12 rounded-2xl border border-gray-800 shadow-2xl shadow-black/30 z-10">
+
+        <!-- Header/Logo section -->
+        <header>
+            <h1 class="text-4xl md:text-6xl font-bold text-gold mb-4 tracking-wider">
+                Ms. Admiralty
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-md mx-auto">
+                Discover a new wave of Merchandise. Join the waitlist to get exclusive discounts on Launch!
+            </p>
+        </header>
+
+        <!-- Waitlist Form Section -->
+        <main>
+            <form id="waitlistForm" class="flex flex-col sm:flex-row gap-4 w-full max-w-lg mx-auto" novalidate>
+                <input
+                    type="email"
+                    id="emailInput"
+                    placeholder="your.email@example.com"
+                    class="w-full sm:w-auto flex-grow bg-transparent border-2 border-gray-600 focus:border-gold focus:ring-2 focus:ring-gold text-white rounded-lg px-5 py-3 transition-all duration-300 placeholder-gray-500 outline-none"
+                    required
+                />
+                <button
+                    type="submit"
+                    class="w-full sm:w-auto bg-gold text-navy font-bold rounded-lg px-8 py-3 hover:bg-gold-dark transform hover:scale-105 transition-all duration-300 shadow-lg shadow-gold/20 disabled:opacity-75 disabled:scale-100"
+                >
+                    Join Waitlist
+                </button>
+            </form>
+
+            <!-- Custom message box for success/error feedback -->
+            <div id="messageBox" class="mt-6 text-center text-md min-h-[24px]"></div>
+        </main>
+
+    </div>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // DOM Elements
+        const waitlistForm = document.getElementById('waitlistForm');
+        const emailInput = document.getElementById('emailInput');
+        const messageBox = document.getElementById('messageBox');
+        
+        // --- Firebase Setup ---
+        // These variables are placeholders that will be provided by the environment.
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        let db;
+
+        try {
+            // Initialize Firebase App
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Authenticate the user
+            (async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            })();
+
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            showMessage("Could not connect to the service. Please try again later.", "error");
+        }
+        
+        // --- Form Submission Logic ---
+        waitlistForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const email = emailInput.value.trim();
+            const submitButton = waitlistForm.querySelector('button[type="submit"]');
+            
+            // A robust regular expression for email validation
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+            // Clear previous messages
+            clearMessage();
+
+            if (email === '') {
+                showMessage('Please enter your email address.', 'error');
+                return;
+            }
+            if (!emailRegex.test(email)) {
+                showMessage('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            // Disable button to prevent multiple submissions
+            submitButton.disabled = true;
+            submitButton.textContent = 'Joining...';
+            
+            try {
+                if (!db) {
+                    throw new Error("Database is not initialized.");
+                }
+                // Save the email to Firestore
+                const waitlistCollectionPath = `/artifacts/${appId}/public/data/waitlist_emails`;
+                await addDoc(collection(db, waitlistCollectionPath), {
+                    email: email,
+                    joinedAt: serverTimestamp()
+                });
+
+                // On success, show a confirmation message and clear the input
+                showMessage('Thank you for joining! We\'ll be in touch soon.', 'success');
+                emailInput.value = '';
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showMessage('An error occurred. Please try again.', 'error');
+            } finally {
+                // Re-enable the button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Join Waitlist';
+            }
+        });
+        
+        /**
+         * Displays a message to the user.
+         * @param {string} message - The message to display.
+         * @param {'success'|'error'} type - The type of message.
+         */
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            
+            // Apply styles based on message type
+            if (type === 'success') {
+                messageBox.className = 'mt-6 text-center text-md text-green-400 transition-opacity duration-300 opacity-100';
+            } else {
+                messageBox.className = 'mt-6 text-center text-md text-red-400 transition-opacity duration-300 opacity-100';
+            }
+        }
+        
+        /**
+         * Clears the message from the message box.
+         */
+        function clearMessage() {
+            messageBox.textContent = '';
+            messageBox.className = 'mt-6 text-center text-md transition-opacity duration-300 opacity-0';
+        }
+    </script>
+</body>
+</html>
+
+
