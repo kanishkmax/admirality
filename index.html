@@ -104,7 +104,17 @@
         
         // --- Firebase Setup ---
         // These variables are placeholders that will be provided by the environment.
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        
+        // The line below has been replaced to directly include your Firebase config.
+        const firebaseConfig = {
+  		apiKey: "AIzaSyAI9iG68gepb-xGcJG3SVNNru1nb381JNU",
+  		authDomain: "msadmirality.firebaseapp.com",
+  		projectId: "msadmirality",
+  		storageBucket: "msadmirality.firebasestorage.app",
+  		messagingSenderId: "1001659582807",
+  		appId: "1:1001659582807:web:c8a0bc6d175a826676d612",
+  		measurementId: "G-SS68670MCT"
+	};
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         
         let db;
@@ -206,5 +216,6 @@
     </script>
 </body>
 </html>
+
 
 
